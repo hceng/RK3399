@@ -1,0 +1,6 @@
+menu "RK Common Config"
+
+config RM_RAMDISK_LOAD
+	tristate "loader root from flash for linux"
+	default n
+endmenu

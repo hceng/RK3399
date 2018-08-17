@@ -1,0 +1,147 @@
+1.  Toolchain
+    Toolchain is define by CROSS_COMPILE in the file Makefile now, you modify or add your default toolchain path.
+    RK uboot default set toolchain as:
+	ifeq ($(ARCHV),aarch64)
+
+	ifneq ($(wildcard ../toolchain/aarch64-linux-android-4.9),)
+	CROSS_COMPILE   ?= $(shell pwd)/../toolchain/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+	endif
+	ifneq ($(wildcard ../prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin),)
+	CROSS_COMPILE   ?= $(shell pwd)/../prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+	endif
+
+	else
+
+	ifneq ($(wildcard ../toolchain/arm-eabi-4.8),)
+	CROSS_COMPILE   ?= $(shell pwd)/../toolchain/arm-eabi-4.8/bin/arm-eabi-
+	endif
+	ifneq ($(wildcard ../prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin),)
+	CROSS_COMPILE   ?= $(shell pwd)/../prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin/arm-eabi-
+	endif
+
+	endif # ARCHV=aarch64
+
+2.  Configure the rk platform
+    rockchip support for uboot chip set configs as:
+
+	[MID product]:
+	  1. Without Security:
+		configs\rk3126_defconfig
+		configs\rk3128_defconfig
+		configs\rk3288_defconfig
+
+	  2. With Security:
+		configs\rk3126_secure_defconfig
+		configs\rk3288_secure_defconfig
+		configs\rk3368_defconfig
+		configs\rk3368h_defconfig
+		configs\rk3366_defconfig
+		configs\rk3399_defconfig
+
+	[BOX product]:
+	  1. Without Security:
+		configs\rk3036_box_defconfig
+		configs\rk3128_box_defconfig
+		configs\rk3288_box_defconfig
+
+	  2. With Security:
+		configs\rk322x_box_defconfig
+		configs\rk322xh_box_defconfig
+		configs\rk3288_box_secure_defconfig
+		configs\rk3328_box_defconfig
+		configs\rk3366_box_defconfig
+		configs\rk3368_box_defconfig
+		configs\rk3368_box_kernel4.4_defconfig
+		configs\rk3399_box_defconfig
+
+	[Linux product]:
+		configs\rk3399_linux_defconfig
+
+	Introduction:
+	  1. What's "Security" ?
+	     It means ARM TrustZone technology. For Rockchip platforms, we usually generate a "trust.img" file.
+
+	  2. What's difference between rk3368_defconfig and rk3368h_defconfig ?
+	     rk3368_defconfig is used only for kernel 3.10 while rk3368h_defconfig only for kenrel-4.4 .
+
+	  3. The defconfig with name "secure" means the platform applies ARM TrustZone technology, For example:
+	     'rk3126_defconfig' is not applied with ARM TrustZon technology, but 'rk3126_secure_defconfig' is applied.
+
+    example:
+        make rk3288_defconfig	-	Command to configure rk3288 platform for uboot.
+
+3.  Build
+	make			-	Command to make rk aarch32 uboot bin.
+	make ARCHV=aarch64	-	Command to make rk aarch64 uboot bin.
+
+	mkv7.sh			-	shell to make rk aarch32 uboot bin.
+	mkv8.sh			-	shell to make rk aarch64 uboot bin.
+
+4.  Clean
+	make clean
+	make distclean		-	Command to clean all include config.
+
+5.  rk uboot bin
+    if uboot as first level bootloader, rk uboot just a bin, such as:
+        RK3288UbootLoader_V2.17.01.bin
+
+    if uboot as second level bootloader, rk uboot just a image, such as:
+	uboot.img			-	second level bootloader
+    uboot as second level bootloader configure by define CONFIG_SECOND_LEVEL_BOOTLOADER
+
+    if define CONFIG_MERGER_MINILOADER, rk uboot will merge mini loader bin which as first level bootloader, such as:
+        RK3288MiniLoaderAll_V2.19.bin	-	fist level bootloader
+
+    if define CONFIG_MERGER_TRUSTIMAGE, rk uboot will merge trust image bin, such as:
+        trust.img			-	trustfirmware image bootloader
+
+    if define CONFIG_MERGER_TRUSTOS, rk uboot will merge trust image bin, such as:
+	rk322x_tee_v1.4.bin		-	without ta trust image bin
+
+    if define CONFIG_MERGER_TRUSTOS_WITH_TA, rk uboot will merge with ta trust image bin, such as:
+        rk322x_tee_ta_v1.4.bin          -       with ta trust image bin
+
+6.  Chipset
+    support RK3288,RK3036,RK3126,RK3128,RK3368,PX5,RK3368H,RK322x,RK3366,RK3399,RK322XH,RK3328.
+
+7.  Storage
+    support emmc, sdcard, nand flash and ums.
+
+8.  configure file
+    rk uboot configure files as:
+        include\configs\rk_default_config.h	-	define all rk default module, just a common file.
+        include\configs\rk30plat.h		-	define detail configure for rk30 plat: rk3036, rk3126, rk3128, rk322x
+        include\configs\rk32plat.h		-	define detail configure for rk32 plat: rk3288
+        include\configs\rk33plat.h		-	define detail configure for rk33 plat: rk3368, px5, rk3368h, rk3366, rk322xh, rk3328
+
+9.  maskrom mode
+    if storage hasn't program rk first level bootloader, power on will enter maskrom mode, prepare for bootloader download.
+
+10. rockusb mode
+    rk rockusb mode is using for down rk other images, such as kernel.img and so on.
+    Press VOL+ key to enter rockusb when rksdk board poweron.
+
+11. Fastboot
+    Android fastboot, Press VOL- key to enter fastboot when rksdk board poweron. all command as:
+        fastboot support below command
+        fastboot getvar version
+        fastboot getvar version-bootloader
+        fastboot getvar unlocked
+        fastboot getvar secure
+        fastboot getvar product
+        fastboot getvar serialno
+        fastboot getvar partition-type:<partition_name>
+        fastboot getvar partition-size:<partition_name>
+        fastboot oem recovery
+        fastboot oem recovery:wipe_data
+        fastboot oem unlock
+        fastboot oem unlock_accept
+        fastboot oem lock
+        fastboot flash <partition_name> [ <filename> ]
+        fastboot reboot
+        fastboot reboot-bootloader
+        fastboot continue
+        fastboot boot <kernel> [ <ramdisk> ]
+        fastboot update <filename> (this file should use make updatepackage in android root directory to generate it)
+        fastboot flashall
+
