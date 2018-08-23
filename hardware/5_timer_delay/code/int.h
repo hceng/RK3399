@@ -16,12 +16,13 @@
 /* Interrupt ID */
 #define GPIO4_INTR 		     50
 #define TIMER_INTR3 		 116
-	 
+#define TSADC_INT  		     129
 
 
 /* irq handler struct and hander table */
-struct s_irq_handler {
-	void (*m_func)(void *data);
+struct s_irq_handler
+{
+    void (*m_func)(void *data);
 };
 
 static struct s_irq_handler g_irq_handler[NR_IRQS];
@@ -40,42 +41,43 @@ typedef void (interrupt_handler_t)(void *);
 *********************************************************************************************/
 
 /* Distributor Registers */
-typedef volatile struct gicd_reg {
-	unsigned int CTLR;      	  //0x0000
-	unsigned int TYPER;    	      //0x0004
-	unsigned int IIDR;      	  //0x0008
-	unsigned int RESERVED0[1];    //0x000C
-	unsigned int STATUSR;	      //0x0010
-	unsigned int RESERVED1[11];   //0x0014
-	unsigned int SETSPI_NSR;      //0x0040
-	unsigned int RESERVED2[1];    //0x0044
-	unsigned int CLRSPI_NSR;	  //0x0048
-	unsigned int RESERVED3[1];    //0x004C
-	unsigned int SETSPI_SR;       //0x0050
-	unsigned int RESERVED4[1];    //0x0054
-	unsigned int CLRSPI_SR;       //0x0058
-	unsigned int RESERVED5[3];    //0x005C
-	unsigned int SEIR;            //0x0068	
-	unsigned int RESERVED6[5];    //0x006C
-	unsigned int IGROUPR[31];     //0x0080	
-	unsigned int RESERVED7[1];    //0x00FC
-	unsigned int ISENABLER[32];   //0x0100
-	unsigned int ICENABLER[32];   //0x0180
-	unsigned int ISPENDR[32];     //0x0200	
-	unsigned int ICPENDR[32];     //0x0280
-	unsigned int ISACTIVER[32];   //0x0300
-	unsigned int ICACTIVER[32];   //0x0380
-	unsigned int IPRIORITYR[256]; //0x0400	
-	unsigned int ITARGETSR[256];  //0x0800
-	unsigned int ICFGR[64];       //0x0c00	
-	unsigned int IGROUPMODR[64];  //0x0d00
-	unsigned int NSACR[64];       //0x0e00
-	unsigned int SGIR;            //0x0f00
-	unsigned int RESERVED8[3];    //0x0f04	
-	unsigned int CPENDSGIR[4];    //0x0f10
-	unsigned int SPENDSGIR[4];    //0x0f20
-	unsigned int RESERVED9[5236]; //0x0f30
-	unsigned int IROUTER[1918];   //0x6100	
+typedef volatile struct gicd_reg
+{
+    unsigned int CTLR;      	  //0x0000
+    unsigned int TYPER;    	      //0x0004
+    unsigned int IIDR;      	  //0x0008
+    unsigned int RESERVED0[1];    //0x000C
+    unsigned int STATUSR;	      //0x0010
+    unsigned int RESERVED1[11];   //0x0014
+    unsigned int SETSPI_NSR;      //0x0040
+    unsigned int RESERVED2[1];    //0x0044
+    unsigned int CLRSPI_NSR;	  //0x0048
+    unsigned int RESERVED3[1];    //0x004C
+    unsigned int SETSPI_SR;       //0x0050
+    unsigned int RESERVED4[1];    //0x0054
+    unsigned int CLRSPI_SR;       //0x0058
+    unsigned int RESERVED5[3];    //0x005C
+    unsigned int SEIR;            //0x0068
+    unsigned int RESERVED6[5];    //0x006C
+    unsigned int IGROUPR[31];     //0x0080
+    unsigned int RESERVED7[1];    //0x00FC
+    unsigned int ISENABLER[32];   //0x0100
+    unsigned int ICENABLER[32];   //0x0180
+    unsigned int ISPENDR[32];     //0x0200
+    unsigned int ICPENDR[32];     //0x0280
+    unsigned int ISACTIVER[32];   //0x0300
+    unsigned int ICACTIVER[32];   //0x0380
+    unsigned int IPRIORITYR[256]; //0x0400
+    unsigned int ITARGETSR[256];  //0x0800
+    unsigned int ICFGR[64];       //0x0c00
+    unsigned int IGROUPMODR[64];  //0x0d00
+    unsigned int NSACR[64];       //0x0e00
+    unsigned int SGIR;            //0x0f00
+    unsigned int RESERVED8[3];    //0x0f04
+    unsigned int CPENDSGIR[4];    //0x0f10
+    unsigned int SPENDSGIR[4];    //0x0f20
+    unsigned int RESERVED9[5236]; //0x0f30
+    unsigned int IROUTER[1918];   //0x6100
 } gicd_reg, *p_gicd;
 
 #define GICD       ((p_gicd)RKIO_GICD_PHYS)

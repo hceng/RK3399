@@ -11,7 +11,7 @@ void delay_us(volatile unsigned long int  i)
     TIMER4->CONTROL_REG &= ~(0x01 << 2);     //Timer interrupt mask
 
     TIMER4->LOAD_COUNT0 = count_value & 0xFFFFFFFF;             //load_count_low bits
-    //TIMER4->LOAD_COUNT1 = (count_value & (0xFFFFFFFF<<8)) >> 8; //load_count_high bits bits
+    //TIMER4->LOAD_COUNT1 = (count_value & (0xFFFFFFFF<<8)) >> 8; //load_count_high bits 
 
     TIMER4->CONTROL_REG |=  (0x01 << 0);     //Timer enable
 

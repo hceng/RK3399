@@ -5,7 +5,7 @@
 .global  _start
 _start: 				
 	/* Could be EL3/EL2/EL1, Initial State: Little Endian, MMU Disabled, i/dCache Disabled */
-	adr	x0, vectors             //Exception vectors
+	ldr	x0, =vectors            //Exception vectors(Absolute address)
  	msr	vbar_el3, x0            //RVBAR_EL3, Reset Vector Base Address Register (if EL3 implemented)
 	
 	mrs	x0, scr_el3        
@@ -24,15 +24,32 @@ _start:
 
 	bl relocate      
 relocate_complete:
-	
+
 	bl clean_bss
 clean_bss_complete:
 
-	bl main 
+	//bl main 
+	
+	ldr	lr, =main	            //Absolute address
+	ret
 	
 halt:
 	b  halt 
 
+/*******************************************************/	
+led_debug:
+	mov	x0, #0xff720000           
+	mov	x1, #0xff720000           
+	ldr	w1, [x1,#4]
+	orr	w1, w1, #0x2000
+	str	w1, [x0,#4]
+	mov	x0, #0xff720000           
+	mov	x1, #0xff720000           
+	ldr	w1, [x1]
+	orr	w1, w1, #0x2000
+	str	w1, [x0]
+	b halt	
+	
 /*******************************************************/	
 lowlevel_init:
 	mov	x29, lr		             //Save LR 
@@ -287,15 +304,16 @@ relocate:
 	
 	ldr x2, =__bss_start    //relocate end addr
 
-	cpy:
-	ldr x3, [x0]            //ldr x3, [x0], #8
+cpy:
+	ldr x3, [x0]            //ldr x3, [x0], #8   //ldp	x10, x11, [x0], #16  	//copy from source address [x0]
 	add x0, x0, #8
 	
-	str x3, [x1]            //str x3, [x1], #8
+	str x3, [x1]            //str x3, [x1], #8   //stp	x10, x11, [x1], #16	    //copy to   target address [x1] 
+
 	add x1, x1, #8
 
 	cmp x1, x2      
-	b.ne cpy       
+	b.lo cpy       
 	
 	b relocate_complete 
 

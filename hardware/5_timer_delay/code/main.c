@@ -3,7 +3,6 @@
 #include "uart.h"
 #include "printf.h"
 
-
 unsigned int test_a = 0x1234; //for test relocate
 unsigned int test_b;          //for test clean bss
 
@@ -43,7 +42,6 @@ int main(void)
 		led_mode(0);
 		delay_s(4);
 	}
-	
-	return 0;
+    return 0;
 }
-	
+

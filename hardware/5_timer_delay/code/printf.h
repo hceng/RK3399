@@ -10,5 +10,5 @@
 extern int printf_test(void);
 extern int printf(const char *fmt, ...);
 extern void puts(char *ptr);
-#endif 
+#endif
 

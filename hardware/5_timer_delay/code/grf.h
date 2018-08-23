@@ -3,7 +3,7 @@
 
 #define    GRF_BASE                  0xFF770000
 
-#define    GRF_GPIO4B_IOMUX    		 (*(volatile unsigned int *)(GRF_BASE + 0xe024))  
+#define    GRF_GPIO4B_IOMUX    		 (*(volatile unsigned int *)(GRF_BASE + 0xe024))
 
 //(*(volatile unsigned int  *)(GRF_BASE + 0xe024))  o
 //(*(volatile unsigned long *)(GRF_BASE + 0xe024))  x
